@@ -1,18 +1,29 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { FaUser, FaEnvelope, FaCalendar, FaEdit } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaCalendar } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
+
+interface DecodedToken {
+  username: string;
+  email: string;
+  created_at?: string;
+}
 
 export const ProfilePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
+
   useEffect(() => {
     const tl = gsap.timeline();
 
     if (containerRef.current && contentRef.current) {
-      gsap.set(contentRef.current.children, { 
-        opacity: 0, 
-        y: 20 
+      gsap.set(contentRef.current.children, {
+        opacity: 0,
+        y: 20,
       });
 
       tl.fromTo(
@@ -27,14 +38,45 @@ export const ProfilePage = () => {
           y: 0,
           duration: 0.8,
           stagger: 0.1,
-          ease: "power2.out"
+          ease: "power2.out",
         }
       );
     }
   }, []);
 
+  useEffect(() => {
+    const getTokenFromCookies = () => {
+      const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    };
+
+    const token = getTokenFromCookies();
+
+    if (token) {
+      try {
+        const decoded = jwtDecode<DecodedToken>(token);
+        console.log(decoded.created_at)
+        setUsername(decoded.username);
+        setEmail(decoded.email);
+        setCreatedAt(
+          decoded.created_at
+            ? new Date(decoded.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+              })
+            : ""
+        );
+      } catch (err) {
+        console.error("Błąd dekodowania tokena:", err);
+      }
+    }
+  }, []);
+
   return (
-    <div ref={containerRef} className="min-h-screen pt-32 pb-10 bg-gradient-to-br from-[#051832] to-[#0a3865]">
+    <div
+      ref={containerRef}
+      className="min-h-screen pt-32 pb-10 bg-gradient-to-br from-[#051832] to-[#0a3865]"
+    >
       <div ref={contentRef} className="container mx-auto px-4">
         <div className="bg-[#181818f5] rounded-3xl p-8 max-w-4xl mx-auto shadow-xl">
           <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
@@ -44,14 +86,14 @@ export const ProfilePage = () => {
               </div>
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold text-white mb-2">John Doe</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">{username}</h1>
               <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2">
                 <FaEnvelope className="text-[#208EF3]" />
-                example@example.com
+                {email}
               </p>
               <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2">
                 <FaCalendar className="text-[#208EF3]" />
-                Member since: May 2025
+                Member since: {createdAt}
               </p>
             </div>
           </div>
