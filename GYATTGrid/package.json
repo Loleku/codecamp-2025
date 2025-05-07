@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "api": "nodemon backend/index.ts"
+    "api": "nodemon backend/index.ts",
+    "gyat": "nodemon backend/server.ts"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0-rc.0",
@@ -20,6 +21,8 @@
     "express": "^5.1.0",
     "gsap": "^3.13.0",
     "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "nodemon": "^3.1.10",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -35,6 +38,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/js-cookie": "^3.0.6",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/sqlite3": "^3.1.11",

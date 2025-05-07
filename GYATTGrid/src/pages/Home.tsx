@@ -4,6 +4,26 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import background from "../assets/sl_031420_28950_10.jpg"
 import { Links } from "../constants/links"
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+
+interface TokenPayload {
+    username: string;
+    exp: number;
+    iat: number;
+  }
+
+const token = Cookies.get("token");
+let username = "";
+
+if (token) {
+    try {
+        const decoded = jwtDecode<TokenPayload>(token);
+        username = decoded.username;
+    } catch (err) {
+        console.error("Błąd dekodowania tokena", err);
+    }
+}
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -89,20 +109,34 @@ export const HomePage = () => {
         />
         <div className="absolute inset-0 bg-blue-500 mix-blend-multiply opacity-60" />
         <div className="relative z-10 max-w-3xl text-center px-4">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-md text-baloonBlue">
-            MORE THAN <span className="text-logoYellow">PUZZLES</span>
-          </h1>
-          <p className="text-lg md:text-2xl mb-8 drop-shadow text-gray-400">
-            GYATTGrid is an offline puzzle system that helps students practice algorithms, 
-            debug code, and analyze their solutions – all without internet access.
-          </p>
-          <Link 
-            to={Links.REGISTER} 
-            className="hidden lg:block bg-gradient-to-r from-[#208EF3] to-[#0F518C] text-white px-5 py-3 rounded-full text-sm font-semibold transform hover:scale-105 transition-all duration-500 ease-in-out shadow-md">
-            Start your journey
-          </Link>
-        </div>
+    <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-md text-baloonBlue">
+      {username ? `Hello, ${username}` : (
+        <>MORE THAN <span className="text-logoYellow">PUZZLES</span></>
+      )}
+    </h1>
+    {token ? (
+      <Link 
+        to={Links.HOME} 
+        className="hidden lg:block bg-gradient-to-r from-green-500 to-green-700 text-white px-5 py-3 rounded-full text-sm font-semibold transform hover:scale-105 transition-all duration-500 ease-in-out shadow-md mt-15">
+        Go to dashboard
+      </Link>
+    ) : (
+        <>
+        <p className="text-lg md:text-2xl mb-8 drop-shadow text-gray-400">
+        GYATTGrid is an offline puzzle system that helps students practice algorithms, 
+        debug code, and analyze their solutions – all without internet access.
+      </p>
+      <Link 
+        to={Links.REGISTER} 
+        className="hidden lg:block bg-gradient-to-r from-[#208EF3] to-[#0F518C] text-white px-5 py-3 rounded-full text-sm font-semibold transform hover:scale-105 transition-all duration-500 ease-in-out shadow-md">
+        Start your journey
+      </Link>
+      </>
+    )}
+  </div>
       </section>
+      {!token &&
+      <> 
       <section
         ref={phoneRef}
         className="relative min-h-[80vh] flex items-center justify-between px-12"
@@ -155,6 +189,8 @@ export const HomePage = () => {
           </div>
         </div>
       </section>
+      </>
+        }
     </div>
   );
 };

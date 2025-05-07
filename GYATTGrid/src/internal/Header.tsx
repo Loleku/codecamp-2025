@@ -2,8 +2,25 @@ import logo from "../assets/logo.png";
 import { Link } from 'react-router-dom';
 import { Links } from '../constants/links';
 import Cookies from "js-cookie";
-const token = Cookies.get("token");
+import { jwtDecode } from "jwt-decode";
 
+interface TokenPayload {
+    username: string;
+    exp: number;
+    iat: number;
+}
+
+const token = Cookies.get("token");
+let username = "";
+
+if (token) {
+    try {
+        const decoded = jwtDecode<TokenPayload>(token);
+        username = decoded.username;
+    } catch (err) {
+        console.error("Błąd dekodowania tokena", err);
+    }
+}
 
 export const Header = () => {
   return (
@@ -26,12 +43,23 @@ export const Header = () => {
         }
       </ul>
       <div className="flex items-center space-x-4">
-        <Link to={Links.LOGIN} className="text-white no-underline">
-            Sign in
-        </Link>
-        <Link to={Links.REGISTER} className="hidden lg:block bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">
-            Sign up
-        </Link>
+        {token ? (
+            <>
+                <p>{username}</p>
+                <Link to={Links.PROFILE} className="hidden lg:block bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">
+                    Profile
+                </Link>
+            </>
+        ) : (
+            <>
+                <Link to={Links.LOGIN} className="text-white no-underline">
+                    Sign in
+                </Link>
+                <Link to={Links.REGISTER} className="hidden lg:block bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">
+                    Sign up
+                </Link>
+            </>
+        )}
       </div>
     </header>
   );

@@ -9,8 +9,7 @@ import { performance } from 'perf_hooks';
 import { spawnSync } from 'child_process';
 
 
-const app = express();
-const PORT = 2008;
+export const apiApp = express.Router();
 
 export type Puzzle = {
     id: string,
@@ -36,17 +35,17 @@ puzzles['1'] = {
 }
 hintCounters['1'] = 0
 
-app.use(cors());
-app.use(bodyParser.json());
+apiApp.use(cors());
+apiApp.use(bodyParser.json());
 
-app.post('/api/puzzle', async (req: Request, res: Response) => {
+apiApp.post('/api/puzzle', async (req: Request, res: Response) => {
   const { level, topic } = req.body;
   try {
     const prompt = `Create a programming puzzle as JSON with keys id (string), template (string), hints (array of strings), and tests (array of {id,input,expected}). Difficulty Level: ${level}, Topic: ${topic}. Respond with JSON only.`;
 
     const response = await fetch('https://ollama4.kkhost.pl/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'apiApplication/json' },
       body: JSON.stringify({ model: 'qwen3:latest', prompt, max_tokens: 1024 })
     });
 
@@ -79,7 +78,7 @@ app.post('/api/puzzle', async (req: Request, res: Response) => {
   }
 })
 
-app.get('/api/puzzle/:id', (req: Request, res: Response) => {
+apiApp.get('/api/puzzle/:id', (req: Request, res: Response) => {
     const id = req.params.id;
     const puzzle = puzzles[id];
 
@@ -92,7 +91,7 @@ app.get('/api/puzzle/:id', (req: Request, res: Response) => {
     res.status(200).send(puzzle);
 })
 
-app.post('/api/test/:id', (req: Request, res: Response) => {
+apiApp.post('/api/test/:id', (req: Request, res: Response) => {
   const id = req.params.id;
   const { code } = req.body as { code: string };
   const puzzle = puzzles[id];
@@ -109,7 +108,7 @@ app.post('/api/test/:id', (req: Request, res: Response) => {
     const tempDir = os.tmpdir();
     const fileName = `puzzle_${id}_${test.id}_${new Date().toDateString()}.js`;
     const filePath = path.join(tempDir, fileName);
-    const wrapper = `
+    const wrapiApper = `
       const fs = require('fs');
       const input = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(x => isNaN(x) ? x : Number(x));
       ${code}
@@ -124,7 +123,7 @@ app.post('/api/test/:id', (req: Request, res: Response) => {
       })();
     `;
 
-    fs.writeFileSync(filePath, wrapper);
+    fs.writeFileSync(filePath, wrapiApper);
     const startTime = performance.now();
     const cp = spawnSync('node', [filePath], {
       encoding: 'utf-8',
@@ -156,7 +155,7 @@ Runtime: ${duration.toFixed(2)}ms
   res.status(201).send({ results, log: log });
 })
 
-app.get('/api/hint/:id', (req: Request, res: Response) => {
+apiApp.get('/api/hint/:id', (req: Request, res: Response) => {
   const id = req.params.id;
   const puzzle = puzzles[id];
   
@@ -171,10 +170,6 @@ app.get('/api/hint/:id', (req: Request, res: Response) => {
 
   res.status(200).send(hint);
 })
-
-app.listen(PORT, () => {
-    console.log(`API server listening on port ${PORT}`);
-});
 
 
 

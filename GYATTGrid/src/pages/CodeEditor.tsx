@@ -19,7 +19,7 @@ export const CodeEditor = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const response = await fetch(`http://localhost:2008/api/puzzle/${id}`);
+                const response = await fetch(`http://localhost:3001/api/puzzle/${id}`);
             
                 if (!response.ok)
                     throw new Error("Puzzle not found");
@@ -39,7 +39,7 @@ export const CodeEditor = () => {
     const runTests = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:2008/api/test/${id}`, {
+            const response = await fetch(`http://localhost:3001/api/test/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
@@ -56,7 +56,7 @@ export const CodeEditor = () => {
 
     const loadHint = async () => {
         try {
-            const response = await fetch(`http://localhost:2008/api/hint/${id}`);
+            const response = await fetch(`http://localhost:3001/api/hint/${id}`);
             const data = await response.text();
             setHint(data);
         } catch (e) {
