@@ -1,11 +1,13 @@
+import logo from "../assets/logo.png"
+
 export const Header = () => {
   return (
     <header className="fixed top-4 left-4 right-4 flex justify-between items-center bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg z-50">
       <div className="flex items-center space-x-3">
-        <img alt="Logo" className="h-10 object-contain" />
+        <img src={logo} alt="Logo" className="h-10 object-contain" />
         <p className="font-bold text-lg leading-none flex items-center m-0 h-10">
-          <span className="text-logoYellow">Weather</span>
-          <span className="text-logoBlue">ly</span>
+          <span className="text-[#208EF3]">GYATT</span>
+          <span className="text-[#0F518C]">Grid</span>
         </p>
       </div>
       <ul className="hidden lg:flex lg:space-x-6">

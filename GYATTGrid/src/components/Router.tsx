@@ -2,6 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from "../pages/Home";
 import { Layout } from "../internal/Layout";
 import { Links } from "../constants/links";
+import { RegisterPage } from "../pages/Register";
+import { LoginPage } from "../pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -12,6 +14,14 @@ const router = createBrowserRouter([
         path: Links.HOME,
         element: <HomePage />,
       },
+      {
+        path: Links.REGISTER,
+        element: <RegisterPage />,
+      },
+      {
+        path: Links.LOGIN,
+        element: <LoginPage />,
+      }
     //   {
     //     path: `${Links.WEATHER}/:city`,
     //     element: <WeatherPage />,
