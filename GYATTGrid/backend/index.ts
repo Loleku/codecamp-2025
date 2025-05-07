@@ -22,6 +22,8 @@ export type Puzzle = {
 const puzzles: Record<string, Puzzle> = {}
 const hintCounters: Record<string, number> = {};
 
+let currId = 0;
+
 // test
 puzzles['1'] = {
   id: '1',
@@ -45,7 +47,7 @@ apiApp.post('/api/puzzle', async (req: Request, res: Response) => {
 
     const response = await fetch('https://ollama4.kkhost.pl/', {
       method: 'POST',
-      headers: { 'Content-Type': 'apiApplication/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'qwen3:latest', prompt, max_tokens: 1024 })
     });
 
@@ -68,7 +70,8 @@ apiApp.post('/api/puzzle', async (req: Request, res: Response) => {
     }
 
     const content = body.completions?.[0]?.message?.content || body.choices?.[0]?.text;
-    const puzzle: Puzzle = JSON.parse(content);
+    const puzzleNoID: Puzzle = JSON.parse(content);
+    const puzzle = {...{id: `${currId++}`}, ...puzzleNoID};
     puzzles[puzzle.id] = puzzle;
     hintCounters[puzzle.id] = 0;
     res.status(201).send(puzzle);
