@@ -7,6 +7,8 @@ import { LoginPage } from "../pages/Login";
 import { NotFoundPage } from "../pages/404";
 import { ProfilePage } from "../pages/Profile";
 import { CodeEditor } from "../pages/CodeEditor";
+import { ReportPage } from "../pages/Report";
+import { SettingsPage } from "../pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +38,14 @@ const router = createBrowserRouter([
       {
         path: Links.EDITOR,
         element: <CodeEditor />,
+      },
+      {
+        path: Links.REPORT,
+        element: <ReportPage />,
+      },
+      {
+        path: Links.SETTINGS,
+        element: <SettingsPage />,
       }
     //   {
     //     path: `${Links.WEATHER}/:city`,

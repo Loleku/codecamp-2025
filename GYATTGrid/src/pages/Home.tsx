@@ -11,7 +11,7 @@ interface TokenPayload {
     username: string;
     exp: number;
     iat: number;
-  }
+}
 
 const token = Cookies.get("token");
 let username = "";

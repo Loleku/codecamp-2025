@@ -7,6 +7,7 @@ export const CodeEditor = () => {
   const navigate = useNavigate();
 
   const [desc, setDesc] = useState("");
+  const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
   const [logs, setLogs] = useState("");
   const [result, setResult] = useState<Record<string, string>[]>([]);
@@ -23,6 +24,7 @@ export const CodeEditor = () => {
         if (!response.ok) throw new Error("Puzzle not found");
         const data = await response.json();
         setDesc(data.description);
+        setTitle(data.title)
         setCode(data.template);
       } catch {
         navigate("/select");
@@ -61,11 +63,11 @@ export const CodeEditor = () => {
   };
 
   return (
-    <div className="font-sans flex h-full bg-gray-900 text-gray-100 pt-16">
+    <div className="font-sans flex h-full bg-[#051C41] text-gray-100 pt-16">
       <div className="w-3/4 p-8 space-y-6">
-        {desc && (
+        {desc && title && (
           <div className="bg-gray-800 rounded-lg p-6 shadow-md border border-gray-700">
-            <h2 className="text-lg font-semibold mb-2 text-white">Puzzle</h2>
+            <h2 className="text-lg font-semibold mb-2 text-white">{title}</h2>
             <p className="text-gray-300">{desc}</p>
           </div>
         )}
