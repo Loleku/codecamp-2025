@@ -1,4 +1,9 @@
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
+import { Link } from 'react-router-dom';
+import { Links } from '../constants/links';
+import Cookies from "js-cookie";
+const token = Cookies.get("token");
+
 
 export const Header = () => {
   return (
@@ -11,17 +16,22 @@ export const Header = () => {
         </p>
       </div>
       <ul className="hidden lg:flex lg:space-x-6">
-        <li className="hover:scale-110 transition-transform">
-          <a href="/weather" className="protected-link">Weather</a>
-        </li>
-        <li className="hover:scale-110 transition-transform">
-          <a href="/favourites" className="protected-link">Favourites</a>
-        </li>
+        <Link to={Links.HOME} className="hover:scale-110 transition-transform text-white no-underline">
+            Home
+        </Link>
+        {token && 
+        <Link to={Links.HOME} className="hover:scale-110 transition-transform text-white no-underline">
+            Placeholder
+        </Link>
+        }
       </ul>
       <div className="flex items-center space-x-4">
-        <a href="/" className="hidden lg:block bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">
-          Home
-        </a>
+        <Link to={Links.LOGIN} className="text-white no-underline">
+            Sign in
+        </Link>
+        <Link to={Links.REGISTER} className="hidden lg:block bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">
+            Sign up
+        </Link>
       </div>
     </header>
   );

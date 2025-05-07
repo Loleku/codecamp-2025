@@ -1,34 +1,96 @@
-import sqlite3 from 'sqlite3';
+const express = require('express');
+const sqlite3 = require('sqlite3');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+import type { Request, Response } from 'express';
+import type { RunResult } from 'sqlite3';
+import jwt from 'jsonwebtoken';
 
-export const db = new sqlite3.Database('./users.db', (err) => {
-  if (err) {
-    console.error('Błąd podczas otwierania bazy danych:', err.message);
-  } else {
-    console.log('Połączono z bazą danych');
+const app = express();
+const PORT = 3001;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+const db = new sqlite3.Database('users.db');
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+  )
+`);
+
+app.post('/register', (req: Request, res: Response) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'Wszystkie pola są wymagane.' });
   }
+
+  const stmt = db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+  stmt.run(username, email, password, function (this: RunResult, err: Error | null) {
+    if (err) {
+      return res.status(400).json({ message: 'Użytkownik z takim emailem lub nazwą użytkownika już istnieje.' });
+    }
+    res.status(201).json({ message: 'Użytkownik zarejestrowany.', id: this.lastID });
+  });
+
+  console.log(`Zarejestrowano użytkownika ${username}, ${email}, ${password}`);
+
+  // db.all("SELECT * FROM users", (err: Error | null, rows: Array<{ id: number; username: string; email: string; password: string }>) => {
+  //   if (err) {
+  //     console.error("Błąd podczas pobierania danych:", err);
+  //     return;
+  //   }
+  //   console.log("Użytkownicy:", rows);
+  // });
 });
 
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
-    )
-  `, (err) => {
-    if (err) {
-      console.error('Błąd podczas tworzenia tabeli:', err.message);
-    } else {
-      console.log('Tabela users utworzona.');
+app.post('/login', (req: Request, res: Response) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'Wszystkie pola są wymagane.' });
+  }
+
+  interface UserRow {
+    id: number;
+    username: string;
+    email: string;
+    password: string;
+  }
+
+  db.get(
+    'SELECT * FROM users WHERE username = ? AND email = ?',
+    [username, email],
+    (err: Error | null, row: UserRow | undefined) => {
+      if (err) {
+        return res.status(500).json({ message: 'Błąd bazy danych.' });
+      }
+
+      if (!row) {
+        return res.status(400).json({ message: 'Nie znaleziono użytkownika.' });
+      }
+
+      if (row.password !== password) {
+        return res.status(400).json({ message: 'Nieprawidłowe hasło.' });
+      }
+
+      const token = jwt.sign(
+        { id: row.id, username: row.username, email: row.email }, 
+        "g!y!a!t@t*g9r@i/d",
+        { expiresIn: '168h' }
+      );
+
+      res.status(200).json({ message: 'Zalogowano pomyślnie.', token });
     }
-  })
+  );
 });
 
-db.close((err) => {
-    if (err) {
-      console.error('Błąd podczas zamykania bazy danych:', err.message);
-    } else {
-      console.log('Połączenie z bazą danych zamknięte.');
-    }
+
+app.listen(PORT, () => {
+  console.log(`Serwer działa na http://localhost:${PORT}`);
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaEyeSlash, FaEye } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { Links } from "../constants/links";
+import axios from "axios";
 
 export const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -10,16 +11,27 @@ export const RegisterPage = () => {
         const togglePasswordVisibility = () => setShowPassword(!showPassword);
         const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
-        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            const username = (document.getElementById("username") as HTMLInputElement).value;
-            const password = (document.getElementById("password") as HTMLInputElement).value;
-            const confirmPassword = (document.getElementById("confirm-password") as HTMLInputElement).value;
-      
-            if (validateForm(username, password, confirmPassword)) {
-              // DB
+        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault();
+          const username = (document.getElementById("username") as HTMLInputElement).value;
+          const email = (document.getElementById("email") as HTMLInputElement).value;
+          const password = (document.getElementById("password") as HTMLInputElement).value;
+          const confirmPassword = (document.getElementById("confirm-password") as HTMLInputElement).value;
+        
+          if (validateForm(username, password, confirmPassword)) {
+            try {
+              const res = await axios.post("http://localhost:3001/register", {
+                username,
+                email,
+                password,
+              });
+              alert(res.data.message);
+            } catch (err: any) {
+              alert(err.response?.data?.message || "Wystąpił błąd");
             }
-          };
+          }
+        };
+        
   
           const validateForm = (username: string, password: string, confirmPassword: string) => {
             if (username.length < 3 || username.length > 10) {

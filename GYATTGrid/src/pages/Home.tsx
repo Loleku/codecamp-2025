@@ -1,8 +1,9 @@
 import { useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import background from "../assets/sl_031420_28950_10.jpg"
+import { Links } from "../constants/links"
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -95,11 +96,11 @@ export const HomePage = () => {
             GYATTGrid is an offline puzzle system that helps students practice algorithms, 
             debug code, and analyze their solutions – all without internet access.
           </p>
-            <button
-              type="submit"
-              className="absolute left-3 top-3 w-6 h-6 text-white/70"
-            >
-            </button>
+          <Link 
+            to={Links.REGISTER} 
+            className="hidden lg:block bg-gradient-to-r from-[#208EF3] to-[#0F518C] text-white px-5 py-3 rounded-full text-sm font-semibold transform hover:scale-105 transition-all duration-500 ease-in-out shadow-md">
+            Start your journey
+          </Link>
         </div>
       </section>
       <section
