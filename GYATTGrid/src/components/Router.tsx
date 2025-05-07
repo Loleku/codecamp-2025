@@ -4,6 +4,8 @@ import { Layout } from "../internal/Layout";
 import { Links } from "../constants/links";
 import { RegisterPage } from "../pages/Register";
 import { LoginPage } from "../pages/Login";
+import { NotFoundPage } from "../pages/404";
+import { ProfilePage } from "../pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +23,14 @@ const router = createBrowserRouter([
       {
         path: Links.LOGIN,
         element: <LoginPage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
+      },
+      {
+        path: Links.PROFILE,
+        element: <ProfilePage />,
       }
     //   {
     //     path: `${Links.WEATHER}/:city`,
