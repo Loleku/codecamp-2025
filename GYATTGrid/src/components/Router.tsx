@@ -6,6 +6,7 @@ import { RegisterPage } from "../pages/Register";
 import { LoginPage } from "../pages/Login";
 import { NotFoundPage } from "../pages/404";
 import { ProfilePage } from "../pages/Profile";
+import { CodeEditor } from "../pages/CodeEditor";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: Links.PROFILE,
         element: <ProfilePage />,
+      },
+      {
+        path: Links.EDITOR,
+        element: <CodeEditor />,
       }
     //   {
     //     path: `${Links.WEATHER}/:city`,

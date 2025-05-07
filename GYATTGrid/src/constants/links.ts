@@ -2,5 +2,6 @@ export const Links = {
     HOME: "/",
     REGISTER: "/register",
     LOGIN: "/login",
-    PROFILE: "/profile"
+    PROFILE: "/profile",
+    EDITOR: "/editor/:id"
 } as const;

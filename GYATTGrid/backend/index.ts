@@ -1,4 +1,5 @@
 import express from 'express';
+import type { Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import os from 'os';
@@ -11,8 +12,9 @@ import { spawnSync } from 'child_process';
 const app = express();
 const PORT = 2008;
 
-type Puzzle = {
+export type Puzzle = {
     id: string,
+    description: string,
     template: string,
     hints: string[],
     tests: { id: number, input: string, expected: string }[]
@@ -21,10 +23,23 @@ type Puzzle = {
 const puzzles: Record<string, Puzzle> = {}
 const hintCounters: Record<string, number> = {};
 
+// test
+puzzles['1'] = {
+  id: '1',
+  description: 'Example: sum two numbers',
+  template: 'function solve(a,b) { return /* … */ }',
+  hints: ['Hint 1', 'Hint 2'],
+  tests: [
+    { id: 1, input: '2 3', expected: '5' },
+    { id: 2, input: '10 15', expected: '25' }
+  ]
+}
+hintCounters['1'] = 0
+
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post('/api/puzzle', async (req, res) => {
+app.post('/api/puzzle', async (req: Request, res: Response) => {
   const { level, topic } = req.body;
   try {
     const prompt = `Create a programming puzzle as JSON with keys id (string), template (string), hints (array of strings), and tests (array of {id,input,expected}). Difficulty Level: ${level}, Topic: ${topic}. Respond with JSON only.`;
@@ -64,7 +79,7 @@ app.post('/api/puzzle', async (req, res) => {
   }
 })
 
-app.get('/api/puzzle/:id/template', (req, res) => {
+app.get('/api/puzzle/:id', (req: Request, res: Response) => {
     const id = req.params.id;
     const puzzle = puzzles[id];
 
@@ -74,10 +89,10 @@ app.get('/api/puzzle/:id/template', (req, res) => {
     }
       
 
-    res.status(200).send(puzzle.template);
+    res.status(200).send(puzzle);
 })
 
-app.post('/api/test/:id', (req, res) => {
+app.post('/api/test/:id', (req: Request, res: Response) => {
   const id = req.params.id;
   const { code } = req.body as { code: string };
   const puzzle = puzzles[id];
@@ -126,12 +141,12 @@ app.post('/api/test/:id', (req, res) => {
       status = output === test.expected ? 'pass' : 'fail';
     }
 
-    log += `
-      Test ${test.id}: ${status}
-      Input: ${test.input}
-      Expected: ${test.expected}, Got: ${output}
-      Runtime: ${duration.toFixed(2)}
-    `;
+    log += `Test ${test.id}: ${status}
+Input: ${test.input}
+Expected: ${test.expected}, Got: ${output}
+Runtime: ${duration.toFixed(2)}ms
+
+`;
 
     results.push({ id: test.id, status, time: duration.toFixed(2), memory: 0 })
     
@@ -141,7 +156,7 @@ app.post('/api/test/:id', (req, res) => {
   res.status(201).send({ results, log: log });
 })
 
-app.get('/api/hint/:id', (req, res) => {
+app.get('/api/hint/:id', (req: Request, res: Response) => {
   const id = req.params.id;
   const puzzle = puzzles[id];
   
