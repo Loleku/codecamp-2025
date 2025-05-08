@@ -50,6 +50,7 @@ export const CodeEditor = () => {
         body: JSON.stringify({ code }),
       });
       localStorage.setItem("editorCode", code)
+      localStorage.setItem("puzzleTitle", title)
       const data = await response.json();
       setResult(data.results);
       setLogs(data.log);
