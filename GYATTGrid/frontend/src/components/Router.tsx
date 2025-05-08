@@ -9,7 +9,7 @@ import { ProfilePage } from "../pages/Profile";
 import { CodeEditor } from "../pages/CodeEditor";
 import { ReportPage } from "../pages/Report";
 import { SettingsPage } from "../pages/Settings";
-import { PuzzleSelectorPage } from "../pages/Select";
+import { PuzzleSelectorPage } from "../pages/SelectPuzzle";
 
 const router = createBrowserRouter([
   {

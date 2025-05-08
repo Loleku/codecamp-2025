@@ -7,6 +7,7 @@ import path from 'path'
 import fs from 'fs';
 import { performance } from 'perf_hooks';
 import { spawnSync } from 'child_process';
+import { Ollama } from 'ollama';
 
 
 export const apiApp = express.Router();
@@ -23,11 +24,11 @@ export type Puzzle = {
 const puzzles: Record<string, Puzzle> = {}
 const hintCounters: Record<string, number> = {};
 
-let currId = 0;
+let currId = 1;
 
 // test
-puzzles['1'] = {
-  id: '1',
+puzzles['0'] = {
+  id: '0',
   title: "Sum of two numbers",
   description: 'Make a function that returns sum of two numbers. Name your function "solve"',
   template: 'function solve(a,b) { return /* … */ }',
@@ -37,49 +38,61 @@ puzzles['1'] = {
     { id: 2, input: '10 15', expected: '25' }
   ]
 }
-hintCounters['1'] = 0
+hintCounters['0'] = 0
 
 apiApp.use(cors());
 apiApp.use(bodyParser.json());
 
+apiApp.get('/api/puzzles', (req: Request, res: Response) => {
+  res.status(200).send(puzzles);
+})
+
 apiApp.post('/api/puzzle', async (req: Request, res: Response) => {
-  const { level, topic } = req.body;
+  const { level, topic } = req.body
+
+  const prompt = [
+    '/no_think',
+    `Create a programming puzzle as JSON with keys:`,
+    `  • title (string)`,
+    `  • description (string)`,
+    `  • template(JS, function must be named "solve") (string)`,
+    `  • hints (array of strings)`,
+    `  • tests (array of {id,input,expected})`,
+    `Difficulty Level: ${level}, Topic: ${topic}.`,
+    `Respond with JSON only.`
+  ].join('\n')
+
   try {
-    const prompt = `Create a programming puzzle as JSON with keys id (string), template (string), hints (array of strings), and tests (array of {id,input,expected}). Difficulty Level: ${level}, Topic: ${topic}. Respond with JSON only.`;
+    const ollama = new Ollama({ host: 'https://ollama4.kkhost.pl' })
+    const aiResponse = await ollama.generate({
+      model: 'qwen3:8b',
+      prompt,
+      stream: false,
+    })
 
-    const response = await fetch('https://ollama4.kkhost.pl/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'qwen3:latest', prompt, max_tokens: 1024 })
-    });
+    const raw: string =
+      (aiResponse as any).response
+      || (aiResponse as any).completions?.[0]?.message?.content
+      || (aiResponse as any).message?.content
+      || ''
 
-    // debugging
-    const raw = await response.text();
-    console.log('raw AI answer:\n', raw);
-
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error('json not found in AI response');
-      throw new Error('Invalid AI response format');
+    if (!raw) {
+      console.error('Brak treści w odpowiedzi AI:', aiResponse)
+      throw new Error('Invalid AI response format')
     }
 
-    let body: any;
-    try {
-      body = JSON.parse(jsonMatch[0]);
-    } catch (e) {
-      console.error('error parsing json:\n', jsonMatch[0]);
-      throw e;
-    }
+    const cleaned = raw.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
 
-    const content = body.completions?.[0]?.message?.content || body.choices?.[0]?.text;
-    const puzzleNoID: Puzzle = JSON.parse(content);
-    const puzzle = {...{id: `${currId++}`}, ...puzzleNoID};
-    puzzles[puzzle.id] = puzzle;
-    hintCounters[puzzle.id] = 0;
-    res.status(201).send(puzzle);
+    const puzzleNoID: Puzzle = JSON.parse(cleaned)
+
+    const puzzle: Puzzle = { ...{id: `${currId++}`}, ...puzzleNoID }
+    puzzles[puzzle.id] = puzzle
+    hintCounters[puzzle.id] = 0
+
+    return res.status(201).json(puzzle)
   } catch (e) {
-    console.error("Error while generating: ", e);
-    res.status(500).send({ message: "Error while generating" });
+    console.error('Error while generating puzzle:', e)
+    return res.status(500).json({ message: 'Error while generating puzzle' })
   }
 })
 

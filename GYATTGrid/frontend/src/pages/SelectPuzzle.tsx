@@ -1,18 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Links } from "../constants/links";
+import type { Puzzle } from "../../../backend/index";
 
-interface Puzzle {
-  id: number;
-  title: string;
-  description: string;
-  template: string;
-  difficulty: string;
-  created_at: string;
-}
+const levels = ['easy', 'medium', 'hard'];
+const topics = ['Loops', 'Arrays', 'if statements', 'arithmetics', 'Logic', 'Anything'];
 
 export const PuzzleSelectorPage = () => {
-  const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+  const [puzzles, setPuzzles] = useState<Record<string, Puzzle>>({});
   const [selectedPuzzleId, setSelectedPuzzleId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,19 +16,18 @@ export const PuzzleSelectorPage = () => {
 
   const fetchPuzzles = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
-      const response = await fetch('http://localhost:3001/api/puzzles');
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to fetch puzzles');
+      const res = await fetch("http://localhost:3001/api/puzzles");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to fetch puzzles");
       }
-      const data = await response.json();
+      const data: Record<string, Puzzle> = await res.json();
       setPuzzles(data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error loading puzzles. Please try again later.';
-      setError(errorMessage);
-      console.error('Error fetching puzzles:', err);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error loading puzzles");
+      console.error(e);
     } finally {
       setLoading(false);
     }
@@ -43,38 +37,48 @@ export const PuzzleSelectorPage = () => {
     fetchPuzzles();
   }, []);
 
-  const selectedPuzzle = puzzles.find((p) => p.id.toString() === selectedPuzzleId);
+  console.log(puzzles);
+
+  const selectedPuzzle = selectedPuzzleId
+    ? puzzles[selectedPuzzleId]
+    : undefined;
 
   const handleStartPuzzle = () => {
     if (selectedPuzzle) {
-      navigate(Links.EDITOR.replace(':id', selectedPuzzle.id.toString()));
+      navigate(
+        Links.EDITOR.replace(
+          ":id",
+          selectedPuzzle.id.toString()
+        )
+      );
     }
   };
 
   const handleGeneratePuzzle = async () => {
     setGenerating(true);
-    setError('');
+    setError("");
     try {
-      const response = await fetch('http://localhost:3001/api/puzzles/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ difficulty: 'Medium' }),
+      const res = await fetch("http://localhost:3001/api/puzzle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          level: levels[Math.floor(Math.random() * levels.length)],
+          topic: topics[Math.floor(Math.random() * topics.length)],
+        }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to generate puzzle');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to generate puzzle");
       }
-
-      const newPuzzle = await response.json();
-      setPuzzles(prev => [...prev, newPuzzle]);
+      const newPuzzle: Puzzle = await res.json();
+      setPuzzles(prev => ({
+        ...prev,
+        [newPuzzle.id.toString()]: newPuzzle
+      }));
       setSelectedPuzzleId(newPuzzle.id.toString());
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error generating puzzle. Please try again later.';
-      setError(errorMessage);
-      console.error('Error generating puzzle:', err);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error generating puzzle");
+      console.error(e);
     } finally {
       setGenerating(false);
     }
@@ -118,29 +122,31 @@ export const PuzzleSelectorPage = () => {
       <div className="container mx-auto px-4">
         <div className="bg-[#181818f5] rounded-3xl p-8 max-w-4xl mx-auto shadow-xl">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">Select a Puzzle</h1>
+            <h1 className="text-3xl font-bold text-white">
+              Select a Puzzle
+            </h1>
             <button
               onClick={handleGeneratePuzzle}
               disabled={generating}
               className={`px-6 py-2 rounded-lg text-white font-medium transition-all duration-300 shadow-md ${
                 generating
-                  ? 'bg-gray-600 cursor-wait'
-                  : 'bg-gradient-to-r from-[#208EF3] to-[#0F518C] hover:from-[#0F518C] hover:to-[#208EF3]'
+                  ? "bg-gray-600 cursor-wait"
+                  : "bg-gradient-to-r from-[#208EF3] to-[#0F518C] hover:from-[#0F518C] hover:to-[#208EF3]"
               }`}
             >
-              {generating ? 'Generating...' : 'Generate New Puzzle'}
+              {generating ? "Generating..." : "Generate New Puzzle"}
             </button>
           </div>
 
           <select
             className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#208EF3] focus:outline-none transition-colors"
             value={selectedPuzzleId}
-            onChange={(e) => setSelectedPuzzleId(e.target.value)}
+            onChange={e => setSelectedPuzzleId(e.target.value)}
           >
             <option value="">Choose a puzzle...</option>
-            {puzzles.map((puzzle) => (
-              <option key={puzzle.id} value={puzzle.id}>
-                {puzzle.title} ({puzzle.difficulty})
+            {Object.values(puzzles).map(p => (
+              <option key={p.id} value={p.id}>
+                {p.title}
               </option>
             ))}
           </select>
@@ -150,8 +156,10 @@ export const PuzzleSelectorPage = () => {
               <h2 className="text-2xl font-semibold mb-4 text-[#208EF3]">
                 {selectedPuzzle.title}
               </h2>
-              <p className="text-gray-300 mb-6">{selectedPuzzle.description}</p>
-              <button 
+              <p className="text-gray-300 mb-6">
+                {selectedPuzzle.description}
+              </p>
+              <button
                 onClick={handleStartPuzzle}
                 className="w-full py-3 rounded-lg bg-gradient-to-r from-[#208EF3] to-[#0F518C] text-white font-medium hover:from-[#0F518C] hover:to-[#208EF3] transition-all duration-300 shadow-md"
               >

@@ -20,7 +20,7 @@ export const CodeEditor = () => {
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
 
-  const editorCode = localStorage.getItem("editorCode")
+  // const editorCode = localStorage.getItem("editorCode")
 
   useEffect(() => {
     const loadData = async () => {
@@ -32,8 +32,8 @@ export const CodeEditor = () => {
         const data = await response.json();
         setDesc(data.description);
         setTitle(data.title)
-        if(editorCode) setCode(editorCode);
-        else setCode(data.template);
+        // if(editorCode) setCode(editorCode);
+        setCode(data.template);
       } catch {
         navigate("/select");
       }
@@ -49,8 +49,7 @@ export const CodeEditor = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       });
-      localStorage.setItem("editorCode", code)
-      localStorage.setItem("puzzleTitle", title)
+      // localStorage.setItem("editorCode", code)
       const data = await response.json();
       setResult(data.results);
       setLogs(data.log);
