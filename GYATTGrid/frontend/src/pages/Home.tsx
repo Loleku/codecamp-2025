@@ -123,7 +123,7 @@ export const HomePage = () => {
           {token ? (
             <Link 
               to={Links.HOME} 
-              className="hidden lg:block bg-gradient-to-r from-[#208EF3] to-[#0F518C] text-white px-5 py-3 rounded-full text-sm font-semibold transform hover:scale-105 transition-all duration-500 ease-in-out shadow-md mt-15">
+              className="inline-block px-8 py-3 mt-5 rounded-lg bg-[#208EF3] text-white text-lg font-medium hover:bg-[#0F518C] transition-all duration-300 hover:scale-105 hover:shadow-lg">
               Go to dashboard
             </Link>
           ) : (

@@ -303,15 +303,15 @@ app.post('/register', (req: Request, res: Response) => {
 });
 
 app.post('/login', (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!username || !email || !password) {
+  if (!username || !password) {
     return res.status(400).json({ message: 'Wszystkie pola są wymagane.' });
   }
 
   db.get(
-    'SELECT * FROM users WHERE username = ? AND email = ?',
-    [username, email],
+    'SELECT * FROM users WHERE username = ?',
+    [username],
     (err: Error | null, row: UserRow | undefined) => {
       if (err) {
         return res.status(500).json({ message: 'Błąd bazy danych.' });
