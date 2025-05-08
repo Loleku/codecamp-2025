@@ -3,5 +3,8 @@ export const Links = {
     REGISTER: "/register",
     LOGIN: "/login",
     PROFILE: "/profile",
-    EDITOR: "/editor/:id"
+    EDITOR: "/editor/:id",
+    REPORT: "/report",
+    SETTINGS: "/settings",
+    SELECT: "/select"
 } as const;

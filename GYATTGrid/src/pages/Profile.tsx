@@ -2,12 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { FaUser, FaEnvelope, FaCalendar, FaSignOutAlt } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
+import { Link } from "react-router-dom";
+import { Links } from "../constants/links";
 
 interface DecodedToken {
   username: string;
   email: string;
   created_at?: string;
 }
+
 
 export const ProfilePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,7 +21,7 @@ export const ProfilePage = () => {
   const [createdAt, setCreatedAt] = useState("");
 
   const handleLogout = () => {
-    console.log("Logging out...");
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   };
 
   useEffect(() => {
@@ -83,7 +86,6 @@ export const ProfilePage = () => {
     >
       <div ref={contentRef} className="container mx-auto px-4">
         <div className="bg-[#181818f5] rounded-3xl p-8 max-w-4xl mx-auto shadow-xl">
-          {/* Profile info section */}
           <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
             <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center">
               <FaUser className="w-16 h-16 text-gray-400" />
@@ -101,7 +103,6 @@ export const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Settings section */}
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-white mb-4">Account Settings</h2>
             <button className="w-full p-3 bg-gray-800 text-white rounded-lg text-left hover:bg-gray-700 transition-colors">
@@ -115,15 +116,15 @@ export const ProfilePage = () => {
             </button>
           </div>
 
-          {/* Logout button */}
           <div className="mt-8 flex justify-end">
-            <button
+            <Link
+              to={Links.HOME}
               onClick={handleLogout}
               className="flex items-center gap-2 px-6 py-3 bg-[#208EF3] text-white rounded-lg hover:bg-[#0F518C] transition-colors"
             >
               <FaSignOutAlt />
               Logout
-            </button>
+            </Link>
           </div>
         </div>
       </div>

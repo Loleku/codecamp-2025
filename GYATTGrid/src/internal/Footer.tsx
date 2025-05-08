@@ -1,4 +1,6 @@
 import { FaFacebookF, FaInstagram, FaTiktok, FaXTwitter } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import { Links } from "../constants/links";
 
 export const Footer = () => {
     return (
@@ -18,10 +20,10 @@ export const Footer = () => {
                     <div className="space-y-4">
                         <h4 className="text-logoBlue font-semibold">Services</h4>
                         <ul className="space-y-2 text-gray-400 text-sm">
-                            <li><a className="hover:text-logoYellow">Placeholder</a></li>
-                            <li><a className="hover:text-logoYellow">Placeholder</a></li>
-                            <li><a className="hover:text-logoYellow">Placeholder</a></li>
-                            <li><a className="hover:text-logoYellow">Placeholder</a></li>
+                            <li><Link to={Links.SETTINGS}>Settings</Link></li>
+                            <li><Link to={Links.PROFILE}>Profile</Link></li>
+                            <li><Link to={Links.SELECT}>Puzzles</Link></li>
+
                         </ul>
                     </div>
 

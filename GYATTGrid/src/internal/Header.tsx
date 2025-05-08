@@ -37,9 +37,14 @@ export const Header = () => {
             Home
         </Link>
         {token && 
-        <Link to={Links.HOME} className="hover:scale-110 transition-transform text-white no-underline">
-            Placeholder
-        </Link>
+        <>
+            <Link to={Links.SELECT} className="hover:scale-110 transition-transform text-white no-underline">
+                Puzzles
+            </Link>
+            <Link to={Links.SETTINGS} className="hover:scale-110 transition-transform text-white no-underline">
+                Settings
+            </Link>
+        </>
         }
       </ul>
       <div className="flex items-center space-x-4">

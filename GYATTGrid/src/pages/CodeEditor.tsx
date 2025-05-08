@@ -1,18 +1,26 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Editor } from "@monaco-editor/react";
+import { Links } from "../constants/links";
 
 export const CodeEditor = () => {
   const { id } = useParams();
+  if (id) {
+    localStorage.setItem("puzzleId", id);
+  }
+
   const navigate = useNavigate();
 
   const [desc, setDesc] = useState("");
+  const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
   const [logs, setLogs] = useState("");
   const [result, setResult] = useState<Record<string, string>[]>([]);
   const [hint, setHint] = useState("");
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
+
+  const editorCode = localStorage.getItem("editorCode")
 
   useEffect(() => {
     const loadData = async () => {
@@ -23,7 +31,9 @@ export const CodeEditor = () => {
         if (!response.ok) throw new Error("Puzzle not found");
         const data = await response.json();
         setDesc(data.description);
-        setCode(data.template);
+        setTitle(data.title)
+        if(editorCode) setCode(editorCode);
+        else setCode(data.template);
       } catch {
         navigate("/select");
       }
@@ -39,6 +49,7 @@ export const CodeEditor = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       });
+      localStorage.setItem("editorCode", code)
       const data = await response.json();
       setResult(data.results);
       setLogs(data.log);
@@ -61,11 +72,11 @@ export const CodeEditor = () => {
   };
 
   return (
-    <div className="font-sans flex h-full bg-gray-900 text-gray-100 pt-16">
+    <div className="font-sans flex h-full bg-[#051C41] text-gray-100 pt-16">
       <div className="w-3/4 p-8 space-y-6">
-        {desc && (
+        {desc && title && (
           <div className="bg-gray-800 rounded-lg p-6 shadow-md border border-gray-700">
-            <h2 className="text-lg font-semibold mb-2 text-white">Puzzle</h2>
+            <h2 className="text-lg font-semibold mb-2 text-white">{title}</h2>
             <p className="text-gray-300">{desc}</p>
           </div>
         )}
@@ -157,18 +168,12 @@ export const CodeEditor = () => {
               ))}
             </div>
             <div className="mt-4 border-t border-gray-700 pt-4 text-center">
-              <button
-                onClick={() => navigate("/select")}
-                className="
-                  inline-block
-                  text-logoYellow hover:text-yellow-300
-                  text-sm font-medium
-                  transform hover:scale-105
-                  transition-all duration-200
-                "
-              >
-                More puzzles ^
-              </button>
+                <Link to={Links.REPORT} className="hidden lg:block bg-[#208EF3] text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0F518C]">
+                    More Puzzles
+                </Link>
+                <Link to={Links.REPORT} className="hidden mt-5 lg:block bg-[#208EF3] text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0F518C]">
+                    View report
+                </Link>
             </div>
           </div>
         </div>

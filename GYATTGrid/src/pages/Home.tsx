@@ -11,7 +11,7 @@ interface TokenPayload {
     username: string;
     exp: number;
     iat: number;
-  }
+}
 
 const token = Cookies.get("token");
 let username = "";
@@ -28,7 +28,6 @@ if (token) {
 gsap.registerPlugin(ScrollTrigger);
 
 export const HomePage = () => {
-  const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -109,7 +108,7 @@ export const HomePage = () => {
         />
         <div className="absolute inset-0 bg-blue-500 mix-blend-multiply opacity-60" />
         <div className="relative z-10 max-w-3xl text-center px-4">
-    <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-md text-baloonBlue">
+    <h1 className="text-5xl md:text-6xl font-extrabold drop-shadow-md text-baloonBlue">
       {username ? `Hello, ${username}` : (
         <>MORE THAN <span className="text-logoYellow">PUZZLES</span></>
       )}
@@ -122,7 +121,7 @@ export const HomePage = () => {
       </Link>
     ) : (
         <>
-        <p className="text-lg md:text-2xl mb-8 drop-shadow text-gray-400">
+        <p className="text-lg md:text-2xl mb-5 drop-shadow text-gray-400">
         GYATTGrid is an offline puzzle system that helps students practice algorithms, 
         debug code, and analyze their solutions – all without internet access.
       </p>

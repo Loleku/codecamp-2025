@@ -13,6 +13,7 @@ export const apiApp = express.Router();
 
 export type Puzzle = {
     id: string,
+    title: string,
     description: string,
     template: string,
     hints: string[],
@@ -27,7 +28,8 @@ let currId = 0;
 // test
 puzzles['1'] = {
   id: '1',
-  description: 'Example: sum two numbers',
+  title: "Sum of two numbers",
+  description: 'Make a function that returns sum of two numbers. Name your function "solve"',
   template: 'function solve(a,b) { return /* … */ }',
   hints: ['Hint 1', 'Hint 2'],
   tests: [
@@ -143,10 +145,14 @@ apiApp.post('/api/test/:id', (req: Request, res: Response) => {
       status = output === test.expected ? 'pass' : 'fail';
     }
 
+    let runtimeExceed;
+
+    if(Number.parseFloat(duration.toFixed(2)) > 5000.00) runtimeExceed = "Maximum execution time exceeded";
+
     log += `Test ${test.id}: ${status}
 Input: ${test.input}
 Expected: ${test.expected}, Got: ${output}
-Runtime: ${duration.toFixed(2)}ms
+Runtime: ${runtimeExceed ? runtimeExceed : duration.toFixed(2) + "ms"}
 
 `;
 
@@ -173,7 +179,3 @@ apiApp.get('/api/hint/:id', (req: Request, res: Response) => {
 
   res.status(200).send(hint);
 })
-
-
-
-
