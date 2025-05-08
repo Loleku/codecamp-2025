@@ -9,6 +9,7 @@ import { ProfilePage } from "../pages/Profile";
 import { CodeEditor } from "../pages/CodeEditor";
 import { ReportPage } from "../pages/Report";
 import { SettingsPage } from "../pages/Settings";
+import { PuzzleSelectorPage } from "../pages/Select";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: Links.SETTINGS,
         element: <SettingsPage />,
+      },
+      {
+        path: Links.SELECT,
+        element: <PuzzleSelectorPage />,
       }
     //   {
     //     path: `${Links.WEATHER}/:city`,

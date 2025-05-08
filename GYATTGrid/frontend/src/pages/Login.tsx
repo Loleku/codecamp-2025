@@ -4,12 +4,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { Links } from "../constants/links";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useAuth } from "../context/authContext";
 
 export const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
     
     const navigate = useNavigate();
+
+    const { setToken } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -23,7 +26,9 @@ export const LoginPage = () => {
             });
 
             if (res.data.message === "Zalogowano pomyślnie.") {
-                Cookies.set("token", res.data.token, { expires: 1 });
+                if (res.data.token) {
+                    setToken(res.data.token);
+                }
                 navigate('/');
             } else {
                 alert("Błąd logowania");
@@ -83,9 +88,9 @@ export const LoginPage = () => {
                     </button>
                     <p className="text-white mt-5">
                         Don't have an account?{" "}
-                        <Link to={Links.REGISTER} className="text-[#208EF3] no-underline">
+                        <button onClick={() => handleSubmit} className="text-[#208EF3] no-underline">
                             Sign up
-                        </Link>
+                        </button>
                     </p>
                 </form>
             </div>
