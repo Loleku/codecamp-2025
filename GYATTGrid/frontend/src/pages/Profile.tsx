@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { FaUser, FaEnvelope, FaCalendar, FaSignOutAlt } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
 import { Links } from "../constants/links";
+import { useNavigate } from "react-router-dom";
 
 interface DecodedToken {
   username: string;
@@ -11,8 +11,8 @@ interface DecodedToken {
   created_at?: string;
 }
 
-
 export const ProfilePage = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +21,10 @@ export const ProfilePage = () => {
   const [createdAt, setCreatedAt] = useState("");
 
   const handleLogout = () => {
+    console.log("Wylogowanie...");
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    console.log("Token usunięty, przekierowuję do:", Links.HOME);
+    navigate(Links.HOME);
   };
 
   useEffect(() => {
@@ -62,7 +65,7 @@ export const ProfilePage = () => {
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
-        console.log(decoded.created_at)
+        console.log(decoded.created_at);
         setUsername(decoded.username);
         setEmail(decoded.email);
         setCreatedAt(
@@ -117,19 +120,16 @@ export const ProfilePage = () => {
           </div>
 
           <div className="mt-8 flex justify-end">
-            <Link
-              to={Links.HOME}
+            <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-6 py-3 bg-[#208EF3] text-white rounded-lg hover:bg-[#0F518C] transition-colors"
             >
               <FaSignOutAlt />
               Logout
-            </Link>
+            </button>
           </div>
         </div>
       </div>
     </div>
   );
 };
-
-

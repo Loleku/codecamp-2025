@@ -6,6 +6,7 @@ import background from "../assets/sl_031420_28950_10.jpg";
 import { Links } from "../constants/links";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import mockup from "../assets/mockup1.png";
 
 interface TokenPayload {
     username: string;
@@ -122,9 +123,9 @@ export const HomePage = () => {
           </h1>
           {token ? (
             <Link 
-              to={Links.HOME} 
+              to={Links.SELECT} 
               className="inline-block px-8 py-3 mt-5 rounded-lg bg-[#208EF3] text-white text-lg font-medium hover:bg-[#0F518C] transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              Go to dashboard
+              Start coding!
             </Link>
           ) : (
             <>
@@ -158,8 +159,9 @@ export const HomePage = () => {
               Plan your days better with advanced forecasts and instant alerts.
             </p>
           </div>
-          <div className="relative w-[400px] h-[800px]">
+          <div>
             <img
+              src={mockup}
               alt="Phone mockup"
               className="w-full h-full object-cover"
             />

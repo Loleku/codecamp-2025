@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Links } from "../constants/links";
-import { Ollama } from "ollama"; // Ensure the correct Ollama library is installed
+import { Ollama } from "ollama";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -28,7 +28,7 @@ export const ReportPage = () => {
       - **Suggestion**: Offer a precise, corrected version of the code or a specific recommendation to address each issue. Include explanations of why the suggestion improves the code (e.g., better performance, readability, or security). If no issues exist, state "N/A" and briefly explain why the code is optimal. Provide code snippets in \`\`\`javascript blocks where relevant.
       - **Additional Notes**: Highlight any overarching concerns (e.g., lack of error handling, poor variable naming, or scalability issues) or commend exceptional aspects of the code (if any). Suggest improvements even for minor inefficiencies or stylistic issues to ensure the code is production-ready.
       
-      Before the structured response, include your thought process in a <think> section, detailing how you analyzed the code step-by-step.
+      Before the structured response, detaili    ng how you analyzed the code step-by-step.
       
       Exercise Description: ${title}
       
@@ -37,7 +37,8 @@ export const ReportPage = () => {
       ${submittedCode}
       \`\`\`
       
-      Be exhaustive, precise, and professional. Assume the code is intended for a production environment and must adhere to the highest standards of quality, security, and maintainability. Do not overlook subtle issues, such as potential edge cases, type coercion problems, or missing documentation. If the code is perfect, provide a rigorous justification for its correctness and optimality.
+      Make your response pleasing to eyes. Use emojis but dont overuse them.
+      Be exhaustive, precise, and profession al. Assume the code is intended for a production environment and must adhere to the highest standards of quality, security, and maintainability. Do not overlook subtle issues, such as potential edge cases, type coercion problems, or missing documentation. If the code is perfect, provide a rigorous justification for its correctness and optimality.
       `;
 
       try {
