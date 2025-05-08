@@ -5,5 +5,6 @@ export const Links = {
     PROFILE: "/profile",
     EDITOR: "/editor/:id",
     REPORT: "/report",
-    SETTINGS: "/settings"
+    SETTINGS: "/settings",
+    SELECT: "/select"
 } as const;

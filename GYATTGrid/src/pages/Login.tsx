@@ -14,13 +14,11 @@ export const LoginPage = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const username = (document.getElementById("username") as HTMLInputElement).value;
-        const email = (document.getElementById("email") as HTMLInputElement).value;
         const password = (document.getElementById("password") as HTMLInputElement).value;
 
         try {
             const res = await axios.post("http://localhost:3001/login", {
                 username,
-                email,
                 password,
             });
 
@@ -51,19 +49,6 @@ export const LoginPage = () => {
                             id="username"
                             name="username"
                             placeholder="Type in your username..."
-                            required
-                            className="w-full p-3 rounded-lg bg-white text-black outline-none"
-                        />
-                    </div>
-                    <div className="mb-5 text-left">
-                        <label htmlFor="email" className="block text-white mb-1">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Type in your E-mail..."
                             required
                             className="w-full p-3 rounded-lg bg-white text-black outline-none"
                         />

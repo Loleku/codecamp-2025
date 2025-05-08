@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Editor } from "@monaco-editor/react";
+import { Links } from "../constants/links";
 
 export const CodeEditor = () => {
   const { id } = useParams();
+  if (id) {
+    localStorage.setItem("puzzleId", id);
+  }
+
   const navigate = useNavigate();
 
   const [desc, setDesc] = useState("");
@@ -15,6 +20,8 @@ export const CodeEditor = () => {
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
 
+  const editorCode = localStorage.getItem("editorCode")
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -25,7 +32,8 @@ export const CodeEditor = () => {
         const data = await response.json();
         setDesc(data.description);
         setTitle(data.title)
-        setCode(data.template);
+        if(editorCode) setCode(editorCode);
+        else setCode(data.template);
       } catch {
         navigate("/select");
       }
@@ -41,6 +49,7 @@ export const CodeEditor = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       });
+      localStorage.setItem("editorCode", code)
       const data = await response.json();
       setResult(data.results);
       setLogs(data.log);
@@ -159,18 +168,12 @@ export const CodeEditor = () => {
               ))}
             </div>
             <div className="mt-4 border-t border-gray-700 pt-4 text-center">
-              <button
-                onClick={() => navigate("/select")}
-                className="
-                  inline-block
-                  text-logoYellow hover:text-yellow-300
-                  text-sm font-medium
-                  transform hover:scale-105
-                  transition-all duration-200
-                "
-              >
-                More puzzles ^
-              </button>
+                <Link to={Links.REPORT} className="hidden lg:block bg-[#208EF3] text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0F518C]">
+                    More Puzzles
+                </Link>
+                <Link to={Links.REPORT} className="hidden mt-5 lg:block bg-[#208EF3] text-gray-900 px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0F518C]">
+                    View report
+                </Link>
             </div>
           </div>
         </div>
